@@ -1,0 +1,54 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: bitcoin
+      POSTGRES_PASSWORD: bitcoin
+      POSTGRES_DB: bitcoin
+    ports:
+      - '5432:5432'
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    restart: always
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: bitcoin
+      DB_PASSWORD: bitcoin
+      DB_NAME: bitcoin
+    depends_on:
+      - db
+    ports:
+      - '5000:5000'
+
+  parser:
+    build: ./parser
+    restart: always
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: bitcoin
+      DB_PASSWORD: bitcoin
+      DB_NAME: bitcoin
+    depends_on:
+      - db
+    ports:
+      - '5001:5001'
+
+  frontend:
+    build: ./frontend
+    restart: always
+    environment:
+      API_BASE: http://localhost:3001
+    ports:
+      - '3000:3000'
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
