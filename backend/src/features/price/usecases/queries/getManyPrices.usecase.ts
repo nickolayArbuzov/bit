@@ -1,5 +1,5 @@
 import { QueryHandler } from '@nestjs/cqrs';
-import { PriceQueryRepository } from '../../repositories/price.query.repository';
+import { PriceQueryRepository } from '../../repositories';
 
 export class GetManyPricesQuery {
   constructor() {}

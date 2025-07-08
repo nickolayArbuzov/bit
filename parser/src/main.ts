@@ -4,6 +4,10 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  const priceSeeder = app.get(PriceSeeder);
+  await priceSeeder.seedIfNeeded();
+  
   const config = new DocumentBuilder()
     .setTitle('My API')
     .setDescription('API description')

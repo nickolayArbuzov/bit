@@ -1,8 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';    
-import { GetManyPricesQuery } from './usecases/queries/getManyPrices.usecase';
-
 import { Price } from './price.entity';
+import { GetManyPricesQuery } from './usecases';
 
 @Controller('price')
 export class PriceController {

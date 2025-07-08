@@ -8,6 +8,6 @@ export class Price {
   @Column()
   price_usd: number;
 
-  @Column()
-  timestamp: string;
+  @Column('timestamptz', { unique: true })
+  timestamp: Date;
 }

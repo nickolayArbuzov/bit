@@ -8,6 +8,6 @@ export class CreatePriceDto {
 
   @ApiProperty()
   @IsDate()
-  timestamp: string;
+  timestamp: Date;
 }
 

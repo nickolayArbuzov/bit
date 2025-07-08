@@ -3,8 +3,8 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PriceController } from './price.controller';
 import { Price } from './price.entity';
-import { GetManyPricesUseCase } from './usecases/queries/getManyPrices.usecase';
-import { PriceQueryRepository } from './repositories/price.query.repository';
+import { GetManyPricesUseCase } from './usecases';
+import { PriceQueryRepository } from './repositories';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Price]), CqrsModule],

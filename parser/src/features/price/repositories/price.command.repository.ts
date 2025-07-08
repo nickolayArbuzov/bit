@@ -15,4 +15,9 @@ export class PriceCommandRepository {
         const entity = this.repository.create(createPriceDto);
         return await this.repository.save(entity);
     }
+
+    async seedPrice(seedPriceDto: CreatePriceDto[]): Promise<any> {
+        const entity = this.repository.create(seedPriceDto);
+        return await this.repository.save(entity);
+    }
 }

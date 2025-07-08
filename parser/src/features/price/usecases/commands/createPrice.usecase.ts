@@ -1,19 +1,20 @@
-import { CommandHandler } from '@nestjs/cqrs';
-import { PriceCommandRepository } from '../../repositories/price.command.repository';
-import { CreatePriceDto } from '../../price.dto';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { PriceCommandRepository } from '../../repositories';
+import { CoingeckoPriceParser } from '../../../../infrastructure';
 
 export class CreatePriceCommand {
-  constructor(public data: CreatePriceDto) {}
+  constructor() {}
 }
 
 @CommandHandler(CreatePriceCommand)
-export class CreatePriceUseCase {
+export class CreatePriceUseCase implements ICommandHandler<CreatePriceCommand> {
   constructor(
-    private priceCommandRepository: PriceCommandRepository,
+    private readonly repository: PriceCommandRepository,
+    private readonly parser: CoingeckoPriceParser,
   ) {}
 
-    async execute(command: CreatePriceCommand){
-      const price = await this.priceCommandRepository.createPrice(command.data)
-      return price
-    }
+  async execute(_: CreatePriceCommand): Promise<void> {
+    const dto = await this.parser.parse();
+    await this.repository.createPrice(dto);
+  }
 }

@@ -1,6 +1,8 @@
 services:
   backend:
-    build: ./backend
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile.dev
     container_name: backend_container
     ports:
       - "5000:5000"
@@ -19,9 +21,14 @@ services:
         condition: service_healthy
     networks:
       - app_network
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
 
   parser:
-    build: ./parser
+    build: 
+      context: ./parser
+      dockerfile: Dockerfile.dev
     container_name: parser_container
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -38,6 +45,9 @@ services:
         condition: service_healthy
     networks:
       - app_network
+    volumes:
+      - ./parser:/app
+      - /app/node_modules
       
   frontend:
     build: ./frontend
