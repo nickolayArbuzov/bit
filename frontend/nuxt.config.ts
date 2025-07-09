@@ -7,5 +7,5 @@ export default defineNuxtConfig({
       apiBase: process.env.API_BASE || "http://localhost:5000",
     },
   },
-  ssr: false, // Отключаем SSR для работы с Chart.js
+  ssr: false,
 });

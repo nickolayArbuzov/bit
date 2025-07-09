@@ -13,9 +13,13 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, computed } from "vue";
 import { usePricesStore } from "~/stores/prices";
+import {
+  getFromDateByPeriod,
+  type PricePeriod,
+} from "@/utils/getFromDateByPeriod";
 
 const props = defineProps<{
-  period?: "day" | "week" | "month" | "year";
+  period?: PricePeriod;
 }>();
 
 const pricesStore = usePricesStore();
@@ -73,29 +77,24 @@ const updateChart = () => {
   }
 };
 
-onMounted(async () => {
-  if (props.period) {
-    await pricesStore.fetchPricesByPeriod(props.period);
-  } else {
-    await pricesStore.fetchPricesByPeriod("day");
-  }
+const loadPrices = async (period: PricePeriod = "day") => {
+  const to = new Date();
+  const from = getFromDateByPeriod(period);
+  await pricesStore.fetchPrices(from, to);
+};
 
+onMounted(async () => {
+  await loadPrices(props.period || "day");
   await createChart();
 });
 
-watch(
-  chartData,
-  () => {
-    updateChart();
-  },
-  { deep: true }
-);
+watch(chartData, updateChart, { deep: true });
 
 watch(
   () => props.period,
   async (newPeriod) => {
     if (newPeriod) {
-      await pricesStore.fetchPricesByPeriod(newPeriod);
+      await loadPrices(newPeriod);
     }
   }
 );
@@ -107,12 +106,10 @@ watch(
   height: 400px;
   position: relative;
 }
-
 .chart-wrapper {
   width: 100%;
   height: 100%;
 }
-
 .loading,
 .error {
   display: flex;
@@ -121,7 +118,6 @@ watch(
   height: 100%;
   font-size: 18px;
 }
-
 .error {
   color: red;
 }

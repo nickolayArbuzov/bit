@@ -54,7 +54,6 @@ const handleCustomPeriod = async (from: Date, to: Date) => {
   await pricesStore.fetchPrices(from, to);
 };
 
-// Computed properties for statistics
 const currentPrice = computed(() => {
   if (pricesStore.prices.length === 0) return "N/A";
   return pricesStore.prices[pricesStore.prices.length - 1].price_usd.toFixed(2);

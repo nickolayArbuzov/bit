@@ -23,21 +23,16 @@ export class PriceController {
     );
 
     res.set({
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/x-ndjson',
       'Transfer-Encoding': 'chunked',
     });
 
-    res.write('[');
-    let isFirst = true;
-
     stream.on('data', (row) => {
       const json = JSON.stringify(row);
-      res.write(isFirst ? json : ',' + json);
-      isFirst = false;
+      res.write(json + '\n');
     });
 
     stream.on('end', () => {
-      res.write(']');
       res.end();
     });
 
@@ -47,8 +42,8 @@ export class PriceController {
     });
 
     res.on('close', () => {
-        console.log('Client closed connection');
-        stream.destroy();
-      });
+      console.log('Client closed connection');
+      stream.destroy();
+    });
   }
 }

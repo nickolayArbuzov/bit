@@ -1,49 +1,50 @@
 export const usePricesApi = () => {
   const config = useRuntimeConfig();
 
-  const fetchPrices = async (from: Date, to: Date) => {
-    try {
-      const response = await $fetch(`${config.public.apiBase}/prices`, {
-        query: {
-          from: from.toISOString(),
-          to: to.toISOString(),
-        },
-      });
-      return response;
-    } catch (error) {
-      console.error("API Error:", error);
-      throw error;
+  const streamPrices = async (
+    from: Date,
+    to: Date,
+    onData: (item: {
+      id: number;
+      timestamp: string;
+      price_usd: number;
+    }) => void,
+    signal: AbortSignal
+  ): Promise<void> => {
+    const url = new URL(`${config.public.apiBase}/price`);
+    url.searchParams.set("from", from.toISOString());
+    url.searchParams.set("to", to.toISOString());
+
+    const response = await fetch(url.toString(), { signal });
+    if (!response.body) throw new Error("No response body");
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder("utf-8");
+    let buffer = "";
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop() || "";
+
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        try {
+          const item = JSON.parse(line);
+          onData({
+            id: item.price_id,
+            price_usd: item.price_price_usd,
+            timestamp: item.price_timestamp,
+          });
+        } catch (e) {
+          console.warn("NDJSON parse error:", line, e);
+        }
+      }
     }
   };
 
-  const fetchPricesByPeriod = async (
-    period: "day" | "week" | "month" | "year"
-  ) => {
-    const now = new Date();
-    let from: Date;
-
-    switch (period) {
-      case "day":
-        from = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-        break;
-      case "week":
-        from = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        break;
-      case "month":
-        from = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-        break;
-      case "year":
-        from = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
-        break;
-      default:
-        from = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-    }
-
-    return fetchPrices(from, now);
-  };
-
-  return {
-    fetchPrices,
-    fetchPricesByPeriod,
-  };
+  return { streamPrices };
 };
