@@ -2,8 +2,8 @@
 
 A full-featured containerized monorepo with:
 
-- NestJS backend (TypeORM)
-- PostgreSQL
+- NestJS backend
+- PostgreSQL (via TypeORM)
 - Nuxt 3 frontend with Chart.js and Pinia
 - Docker Compose orchestration
 
@@ -14,7 +14,7 @@ A full-featured containerized monorepo with:
 ### 🔧 Backend (`/backend`)
 
 - NestJS (modular backend framework)
-- TypeORM for models and inserts
+- TypeORM
 - Swagger (OpenAPI docs)
 
 ### 🌐 Frontend (`/frontend`)
@@ -33,7 +33,6 @@ A full-featured containerized monorepo with:
 ## ✅ Features
 
 - ✅ Full Docker Compose setup
-- ✅ Live reload for backend/frontend
 - ✅ Swagger & ReDoc API docs
 - ✅ Streaming price data (abortable)
 
@@ -42,8 +41,8 @@ A full-featured containerized monorepo with:
 ## 🚀 Quick Start
 
 ```bash
-git clone https://github.com/your/repo.git
-cd your/repo
+git clone https://github.com/nickolayArbuzov/bit.git
+cd bit
 cp .env.example .env
 docker-compose up --build
 ```
