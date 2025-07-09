@@ -22,7 +22,8 @@ import { Price } from './features/price/price.entity';
         entities: [
           Price,
         ],
-        synchronize: true,
+        synchronize: false,
+        migrationsRun: false,
       }),
     }),
     PriceModule,

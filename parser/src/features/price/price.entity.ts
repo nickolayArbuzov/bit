@@ -5,7 +5,7 @@ export class Price {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column('double precision')
   price_usd: number;
 
   @Column('timestamptz', { unique: true })

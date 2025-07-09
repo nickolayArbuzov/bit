@@ -4,17 +4,19 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PriceCron } from './price.cron';
 import { Price } from './price.entity';
 import { CreatePriceUseCase } from './usecases';
-import { PriceCommandRepository } from './repositories';
-import { CoingeckoPriceParser } from '../../infrastructure';
+import { PriceCommandRepository, PriceQueryRepository } from './repositories';
+import { PriceSeeder } from './seeder';
+import { ParserModule } from '../../parser';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Price]), CqrsModule],
+  imports: [TypeOrmModule.forFeature([Price]), CqrsModule, ParserModule],
   controllers: [],
   providers: [
     PriceCron,
     CreatePriceUseCase,
-    CoingeckoPriceParser,
-    PriceCommandRepository
+    PriceCommandRepository,
+    PriceQueryRepository,
+    PriceSeeder,
   ],
 })
 export class PriceModule {}

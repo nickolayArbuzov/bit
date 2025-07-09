@@ -12,12 +12,10 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_PORT: ${POSTGRES_PORT}
       POSTGRES_HOST: ${POSTGRES_HOST}
-      REDIS_HOST: ${REDIS_HOST}
-      REDIS_PORT: ${REDIS_PORT}
     depends_on:
       postgres:
         condition: service_healthy
-      redis:
+      parser: 
         condition: service_healthy
     networks:
       - app_network
@@ -30,19 +28,22 @@ services:
       context: ./parser
       dockerfile: Dockerfile.dev
     container_name: parser_container
+    ports:
+      - "5001:5001"
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_PORT: ${POSTGRES_PORT}
       POSTGRES_HOST: ${POSTGRES_HOST}
-      REDIS_HOST: ${REDIS_HOST}
-      REDIS_PORT: ${REDIS_PORT}
     depends_on:
       postgres:
         condition: service_healthy
-      redis:
-        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:5001/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - app_network
     volumes:
@@ -91,41 +92,9 @@ services:
         condition: service_healthy
     networks:
       - app_network
-
-
-  redis:
-    image: redis:7
-    container_name: redis_container
-    ports:
-      - "${REDIS_PORT}:6379"
-    volumes:
-      - redis_data:/data
-    networks:
-      - app_network
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-
-  redis-commander:
-    image: rediscommander/redis-commander:latest
-    container_name: redis_commander
-    environment:
-      - REDIS_HOSTS=local:redis:${REDIS_PORT}
-    ports:
-      - "8081:8081"
-    depends_on:
-      redis:
-        condition: service_healthy
-    networks:
-      - app_network
-
         
 volumes:
   postgres_data:
-  redis_data:
 
 networks:
   app_network:

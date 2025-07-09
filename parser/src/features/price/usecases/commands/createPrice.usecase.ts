@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PriceCommandRepository } from '../../repositories';
-import { CoingeckoPriceParser } from '../../../../infrastructure';
+import { CoingeckoPriceParser } from '../../../../parser/coingecko.parser';
 
 export class CreatePriceCommand {
   constructor() {}

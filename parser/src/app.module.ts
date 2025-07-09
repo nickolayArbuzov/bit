@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
 import { PriceModule } from './features/price/price.module';
 import { Price } from './features/price/price.entity';
+import { HealthController } from './health/health.controller';
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { Price } from './features/price/price.entity';
     }),
     PriceModule,
   ],
-  controllers: [],
+  controllers: [HealthController],
   providers: [],
 })
 export class AppModule {}

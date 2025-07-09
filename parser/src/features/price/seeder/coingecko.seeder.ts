@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CoingeckoPriceParser } from './coingecko.parser';
-import { PriceCommandRepository, PriceQueryRepository } from '../features/price/repositories';
+import { CoingeckoPriceParser } from '../../../parser/coingecko.parser';
+import { PriceCommandRepository, PriceQueryRepository } from '../repositories';
 
 @Injectable()
 export class PriceSeeder {
@@ -17,7 +17,7 @@ export class PriceSeeder {
     }
 
     const to = new Date();
-    const from = new Date(to.getTime() - 365 * 24 * 60 * 60 * 1000); 
+    const from = new Date(to.getTime() - 90 * 24 * 60 * 60 * 1000); 
 
     const prices = await this.parser.fetchHistory(from, to);
 

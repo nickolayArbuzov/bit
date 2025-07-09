@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { CreatePriceDto } from '../features/price/price.dto';
 
+
 @Injectable()
 export class CoingeckoPriceParser {
   async parse(): Promise<CreatePriceDto> {
     const { data } = await axios.get(
       'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd',
     );
-    console.log('data-------------',data)
     return {
       price_usd: data.bitcoin.usd,
       timestamp: new Date(),
