@@ -1,9 +1,7 @@
 <template>
   <div class="chart-container">
     <div v-if="loading" class="loading">Loading chart data...</div>
-    <div v-else-if="error" class="error">
-      {{ error }}
-    </div>
+    <div v-else-if="error" class="error">{{ error }}</div>
     <div v-else class="chart-wrapper">
       <canvas ref="chartCanvas"></canvas>
     </div>
@@ -11,7 +9,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, computed } from "vue";
+import {
+  ref,
+  onMounted,
+  onUnmounted,
+  watch,
+  computed,
+  defineExpose,
+} from "vue";
 import { usePricesStore } from "~/stores/prices";
 import {
   getFromDateByPeriod,
@@ -32,7 +37,6 @@ const chartData = computed(() => pricesStore.chartData);
 
 const createChart = async () => {
   if (!chartCanvas.value) return;
-
   const { Chart, registerables } = await import("chart.js");
   Chart.register(...registerables);
 
@@ -45,50 +49,55 @@ const createChart = async () => {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      animation: false,
       scales: {
         y: {
           beginAtZero: false,
-          title: {
-            display: true,
-            text: "Price (USD)",
-          },
+          title: { display: true, text: "Price (USD)" },
         },
         x: {
-          title: {
-            display: true,
-            text: "Time",
-          },
+          title: { display: true, text: "Time" },
         },
       },
       plugins: {
-        title: {
-          display: true,
-          text: "Bitcoin Price Chart",
-        },
+        title: { display: true, text: "Bitcoin Price Chart" },
       },
     },
   });
 };
 
-const updateChart = () => {
+const destroyChart = () => {
   if (chart) {
-    chart.data = chartData.value;
-    chart.update();
+    chart.destroy();
+    chart = null;
   }
 };
 
 const loadPrices = async (period: PricePeriod = "day") => {
   const to = new Date();
   const from = getFromDateByPeriod(period);
+  destroyChart();
   await pricesStore.fetchPrices(from, to);
+  await createChart();
 };
+
+const loadCustomPeriod = async (from: Date, to: Date) => {
+  destroyChart();
+  await pricesStore.fetchPrices(from, to);
+  await createChart();
+};
+
+defineExpose({
+  loadCustomPeriod,
+});
 
 onMounted(async () => {
   await loadPrices(props.period || "day");
-  await createChart();
 });
 
-watch(chartData, updateChart, { deep: true });
+onUnmounted(() => {
+  destroyChart();
+});
 
 watch(
   () => props.period,

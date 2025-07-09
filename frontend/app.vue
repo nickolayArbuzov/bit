@@ -12,7 +12,7 @@
         @custom-period="handleCustomPeriod"
       />
 
-      <BitcoinChart :period="selectedPeriod" />
+      <BitcoinChart ref="chartRef" :period="selectedPeriod" />
 
       <div v-if="pricesStore.prices.length > 0" class="stats">
         <h3>Statistics:</h3>
@@ -42,16 +42,19 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { usePricesStore } from "~/stores/prices";
+import BitcoinChart from "@/components/BitcoinChart.vue";
 
 const pricesStore = usePricesStore();
+const chartRef = ref<InstanceType<typeof BitcoinChart>>();
+
 const selectedPeriod = ref<"day" | "week" | "month" | "year">("day");
 
-const handlePeriodChange = (period: "day" | "week" | "month" | "year") => {
+const handlePeriodChange = (period: typeof selectedPeriod.value) => {
   selectedPeriod.value = period;
 };
 
 const handleCustomPeriod = async (from: Date, to: Date) => {
-  await pricesStore.fetchPrices(from, to);
+  await chartRef.value?.loadCustomPeriod(from, to);
 };
 
 const currentPrice = computed(() => {
